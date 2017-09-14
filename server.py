@@ -12,18 +12,21 @@ class MainHandler(web.RequestHandler):
 
     def post(self):
         print(self.request.body)
+        # save to redis
         self.write(self.request.body)
 
 
 def scheduler():
     print('4s ', datetime.datetime.now())
+    # check redis task
 
 
 if __name__ == '__main__':
-    application = web.Application([
+    app = web.Application([
         (r'/', MainHandler),
     ])
-    application.listen(8081)
+    app.listen(8081)
     print('http://127.0.0.1:8081')
+
     ioloop.PeriodicCallback(scheduler, 4000).start()
     ioloop.IOLoop.instance().start()
