@@ -1,14 +1,27 @@
 """server.py."""
 import datetime
 
-from tornado import web, ioloop
+import tornadoredis
+
+from tornado import web, ioloop, gen
+
+
+CONNECTION_POOL = tornadoredis.ConnectionPool(max_connections=500,
+                                              wait_for_available=True)
 
 
 class MainHandler(web.RequestHandler):
 
+    @web.asynchronous
+    @gen.engine
     def get(self):
-        print(self.request.remote_ip)
+        client = tornadoredis.Client(connection_pool=CONNECTION_POOL)
+        info = yield gen.Task(client.info)
+
+        print(self.request.remote_ip, info)
+
         self.write('Hello world!\n')
+        yield gen.Task(client.disconnect)
 
     def post(self):
         print(self.request.body)
