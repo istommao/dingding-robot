@@ -4,7 +4,7 @@ import os
 from tornado import web, gen
 from tornado.escape import json_encode
 
-from . import cache
+from . import cache, conf
 
 
 BASE_DIR = os.path.dirname(__file__)
@@ -29,7 +29,7 @@ class MainHandler(web.RequestHandler):
     @gen.engine
     def post(self):
         token = self.get_query_argument('access_token', default=None, strip=True)
-        if token is None or token != cache.ALLOW_TOKEN:
+        if token is None or token != conf.ALLOW_TOKEN:
             self.write('invalid token')
         else:
             self.handler_message()
