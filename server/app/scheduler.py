@@ -1,4 +1,5 @@
 """app scheduler."""
+import logging
 import json
 
 import requests
@@ -6,6 +7,8 @@ import requests
 from tornado.escape import json_decode, json_encode
 
 from . import cache, conf
+
+logging.basicConfig(level=logging.INFO, filename='main.log')
 
 
 START_KEY = 'monitor:{}:{}'
@@ -81,9 +84,9 @@ def scheduler():
             data = json.loads(data)
             datalist.append(data)
         except json.decoder.JSONDecodeError:
-            print('ERROR: json format error', item)
+            logging.error('ERROR: json format error %s', item)
             continue
 
     if len(datalist) > 0:
         resp = push2dingding(datalist)
-        print(resp.status_code, resp.content)
+        logging.info('status_code: %s content: %s', resp.status_code, resp.content)
